@@ -73,19 +73,27 @@ class alkaline_ele():
         return U
 
     def Faraday_eff(self, i=1000, f1=200, f2=0.94):
-        pass
+        m =((1/1000)/(1/10000))**2
+        eps_f = (i/self.A)**2/(f1*m+(i/self.A)**2)*f2
+        return eps_f
 
     def hydrogen_production(self, i=1000):
-        pass
+        HP = (i/2*96485.3321*1.008/1000)/3600
+
+        return HP
 
     def power(self, i=1000):
-        pass
+        power = self.E_cell_empirical(i=i)*i
+        return power
 
     def DC_efficiency(self, i=1000):
-        pass
+        HP =(i/(2*F))
+        DC_eff = HP*285.83*10**3/self.power(i)
+        return DC_eff
 
     def Voltage_eff(self, i=1000):
-        pass
+        V_eff = self.DC_efficiency(i=i)/self.Faraday_eff(i=i)
+        return V_eff
 
 if __name__ == '__main__':
     # Add new methods in the alkaline_ele class that return different efficiencies or write your own codes.
@@ -96,12 +104,78 @@ if __name__ == '__main__':
 
     # 1. Voltage vs current
     Voltage = []
+    Faraday_eff = []
+    hydrogen_production_list = []
+    DC_eff = []
+    V_eff_list = []
+
+    plotList = []
+
     for current_density in i_range:
-        Voltage.append(my_ael.E_cell_empirical(i=current_density))
-    plt.plot(I_range, Voltage, label='Voltage')
+        Voltage.append(my_ael.E_cell_empirical(i=current_density))  
+        Faraday_eff.append(my_ael.Faraday_eff(i=current_density))
+        hydrogen_production_list.append(my_ael.hydrogen_production(i=current_density))
+        DC_eff.append(my_ael.DC_efficiency(i=current_density))
+        V_eff_list.append(my_ael.Voltage_eff(i=current_density))
+
+        
+
+
+
+    col = 3
+    rows = 2
+    # Create two subplots and unpack the output array immediately
+    fig = plt.figure(1,dpi=100)
+
+    plt.subplot(rows, col, 1)
+    plt.title("Original") 
+    plt.plot(I_range, Voltage, label='Voltage')  
     plt.ylabel('Voltage(V)')
     plt.xlabel('Current(A)')
     plt.legend()
+    plt.grid(linestyle = '-.', linewidth=0.6)
+
+
+    plt.subplot(rows, col, 2)
+    plt.title("Faraday efficiency vs Current") 
+    plt.plot(I_range, Faraday_eff, label='Voltage')  
+    plt.ylabel('Faraday efficiency')
+    plt.xlabel('Current(A)')
+    plt.legend()
+    plt.grid(linestyle = '-.', linewidth=0.6)
+
+
+    plt.subplot(rows, col, 3)
+    plt.title("Hydrogen production vs Current") 
+    plt.plot(I_range, hydrogen_production_list, label='Voltage')  
+    plt.ylabel('Hydrogen production')
+    plt.xlabel('Current(A)')
+    plt.legend()
+    plt.grid(linestyle = '-.', linewidth=0.6)
+
+
+    plt.subplot(rows, col, 4)
+    plt.title("DC efficiency vs Current") 
+    plt.plot(I_range, DC_eff, label='Voltage')  
+    plt.ylabel('DC efficiency')
+    plt.xlabel('Current(A)')
+    plt.legend()
+    plt.grid(linestyle = '-.', linewidth=0.6)
+
+
+    plt.subplot(rows, col, 5)
+    plt.title("Voltage efficiency vs Current") 
+    plt.plot(I_range, V_eff_list, label='Voltage')  
+    plt.ylabel('DC efficiency')
+    plt.xlabel('Current(A)')
+    plt.legend()
+    plt.grid(linestyle = '-.', linewidth=0.6)
+    
+    plt.tight_layout()
+
     plt.show()
+
+
+    
 
 
